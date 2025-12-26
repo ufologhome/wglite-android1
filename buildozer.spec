@@ -3,18 +3,31 @@ title = WG Lite
 package.name = wglite
 package.domain = org.example
 
+# ГДЕ КОД
+source.dir = .
 source.include_exts = py
-requirements = python3,kivy,jnius
 
+# ВЕРСИЯ (ОБЯЗАТЕЛЬНО)
+version = 0.1
+
+# ЗАВИСИМОСТИ
+requirements = python3,kivy,pyjnius
+
+# ANDROID 7.1.2
 android.api = 25
 android.minapi = 24
+
+# ПРАВА
 android.permissions = INTERNET
 
+# VPN service
 android.services = vpnservice:foreground
 
+# UI
 orientation = portrait
 fullscreen = 0
 
+# VPN SERVICE В MANIFEST
 android.manifest.application_args = \
     <service android:name="org.kivy.android.PythonService" \
     android:permission="android.permission.BIND_VPN_SERVICE" \
