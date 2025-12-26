@@ -23,13 +23,14 @@ jobs:
         distribution: temurin
         java-version: 17
 
-    # 3️⃣ Android SDK (ОБЯЗАТЕЛЬНО)
+    # 3️⃣ Android SDK
     - name: Set up Android SDK
       uses: android-actions/setup-android@v3
 
-    # 4️⃣ Принять лицензии SDK (ТО, ЧЕГО НЕ ХВАТАЛО)
-    - name: Accept Android SDK licenses
+    # 4️⃣ УСТАНОВИТЬ НОРМАЛЬНЫЕ build-tools + принять лицензии
+    - name: Install Android SDK components
       run: |
+        sdkmanager "platform-tools" "platforms;android-25" "build-tools;30.0.3"
         yes | sdkmanager --licenses
 
     # 5️⃣ Зависимости + buildozer
