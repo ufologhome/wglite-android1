@@ -16,7 +16,7 @@ requirements = python3,kivy,pyjnius
 # ANDROID 7.1.2
 android.api = 25
 android.minapi = 24
-android.build_tools_version = 30.0.3
+android.build_tools = 30.0.3
 
 # ПРАВА
 android.permissions = INTERNET
