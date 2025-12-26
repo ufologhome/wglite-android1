@@ -8,33 +8,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1️⃣ Склонировать репозиторий
     - uses: actions/checkout@v4
 
-    # 1️⃣ Python
+    # 2️⃣ Установить Python
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
-    # 2️⃣ Java
+    # 3️⃣ Установить Java
     - name: Set up Java
       uses: actions/setup-java@v4
       with:
         distribution: temurin
         java-version: 17
 
-    # 3️⃣ Android SDK
-    - name: Set up Android SDK
-      uses: android-actions/setup-android@v3
-
-    # 4️⃣ УСТАНОВИТЬ НОРМАЛЬНЫЕ build-tools + принять лицензии
-    - name: Install Android SDK components
+    # 4️⃣ Установить Android SDK и cmdline-tools
+    - name: Install Android SDK
       run: |
-        sdkmanager "platform-tools" "platforms;android-25" "build-tools;30.0.3"
+        mkdir -p $HOME/android-sdk/cmdline-tools
+        cd $HOME/android-sdk/cmdline-tools
+        curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+        unzip commandlinetools.zip
+        mv cmdline-tools latest
+        export ANDROID_HOME=$HOME/android-sdk
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
         yes | sdkmanager --licenses
+        sdkmanager "platform-tools" "platforms;android-25" "build-tools;30.0.3"
 
-    # 5️⃣ Зависимости + buildozer
-    - name: Install deps
+    # 5️⃣ Установить зависимости и Buildozer
+    - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install -y zip unzip
@@ -44,9 +48,11 @@ jobs:
     # 6️⃣ Сборка APK
     - name: Build APK
       run: |
+        export ANDROID_HOME=$HOME/android-sdk
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
         buildozer android debug
 
-    # 7️⃣ Загрузка APK
+    # 7️⃣ Загрузка APK как артефакта
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
