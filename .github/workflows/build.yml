@@ -10,16 +10,42 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    # 1️⃣ Python
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # 2️⃣ Java
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    # 3️⃣ Android SDK (ОБЯЗАТЕЛЬНО)
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+
+    # 4️⃣ Принять лицензии SDK (ТО, ЧЕГО НЕ ХВАТАЛО)
+    - name: Accept Android SDK licenses
+      run: |
+        yes | sdkmanager --licenses
+
+    # 5️⃣ Зависимости + buildozer
     - name: Install deps
       run: |
         sudo apt update
-        sudo apt install -y python3 python3-pip zip unzip openjdk-17-jdk
+        sudo apt install -y zip unzip
+        pip install --upgrade pip
         pip install buildozer cython
 
+    # 6️⃣ Сборка APK
     - name: Build APK
       run: |
         buildozer android debug
 
+    # 7️⃣ Загрузка APK
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
