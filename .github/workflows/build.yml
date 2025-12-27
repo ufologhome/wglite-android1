@@ -8,55 +8,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Получаем код
     - uses: actions/checkout@v4
 
-    # 2️⃣ Устанавливаем Python
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    # 3️⃣ Устанавливаем Java
-    - name: Set up Java
+    - name: Set up JDK
       uses: actions/setup-java@v4
       with:
         distribution: temurin
         java-version: 17
 
-    # 4️⃣ Устанавливаем Android SDK вручную и фиксируем build-tools 30.0.3
-    - name: Install Android SDK + build-tools 30.0.3
-      run: |
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        cd $HOME/android-sdk/cmdline-tools
-        curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-        unzip commandlinetools.zip
-        mv cmdline-tools latest
-        export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
 
-        # Автоматически принимаем лицензии
-        yes | sdkmanager --licenses
+    - name: Accept SDK licenses
+      run: yes | sdkmanager --licenses
 
-        # Устанавливаем только нужные компоненты
-        sdkmanager "platform-tools" "platforms;android-25" "build-tools;30.0.3"
-
-    # 5️⃣ Зависимости и buildozer
-    - name: Install deps
-      run: |
-        sudo apt update
-        sudo apt install -y zip unzip
-        pip install --upgrade pip
-        pip install buildozer cython
-
-    # 6️⃣ Собираем APK
     - name: Build APK
       run: |
-        buildozer android debug
+        chmod +x gradlew
+        ./gradlew assembleDebug
 
-    # 7️⃣ Загружаем APK как артефакт
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: wglite-apk
-        path: bin/*.apk
+        name: WG-Lite-APK
+        path: app/build/outputs/apk/debug/*.apk
